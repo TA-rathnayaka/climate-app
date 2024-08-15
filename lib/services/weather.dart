@@ -1,4 +1,25 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
+import 'networking.dart';
+import 'location.dart';
+
 class WeatherModel {
+  String? apiAddress;
+  String? apiKey;
+
+  Future<dynamic> getWeatherData() async {
+    Location location = Location();
+    await location.getCurrentLocation();
+    await dotenv.load(fileName: ".env");
+    apiAddress = dotenv.env['API_URL'] ?? '';
+    apiKey = dotenv.env['API_KEY'] ?? '';
+
+    NetworkHelper networkHelper = NetworkHelper(
+        url:
+            '${apiAddress}?lat=${location.latitude}&lon=${location.longitude}&appid=${apiKey}&units=metric');
+    return networkHelper.getData();
+  }
+
   String getWeatherIcon(int condition) {
     if (condition < 300) {
       return '🌩';
