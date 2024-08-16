@@ -3,20 +3,24 @@ import 'package:http/http.dart' as http;
 import 'networking.dart';
 import 'location.dart';
 
-class WeatherModel {
-  String? apiAddress;
-  String? apiKey;
+String apiAddress = apiAddress = dotenv.env['API_URL'] ?? '';
+String apiKey = apiKey = dotenv.env['API_KEY'] ?? '';
 
+class WeatherModel {
   Future<dynamic> getWeatherData() async {
     Location location = Location();
     await location.getCurrentLocation();
     await dotenv.load(fileName: ".env");
-    apiAddress = dotenv.env['API_URL'] ?? '';
-    apiKey = dotenv.env['API_KEY'] ?? '';
 
     NetworkHelper networkHelper = NetworkHelper(
         url:
             '${apiAddress}?lat=${location.latitude}&lon=${location.longitude}&appid=${apiKey}&units=metric');
+    return networkHelper.getData();
+  }
+
+  Future<dynamic> getCityWeather(String cityName) async {
+    NetworkHelper networkHelper = NetworkHelper(
+        url: '${apiAddress}?q=$cityName&appid=${apiKey}&units=metric');
     return networkHelper.getData();
   }
 
